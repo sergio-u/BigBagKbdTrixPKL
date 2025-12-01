@@ -22,7 +22,7 @@ Overview over the EPKL Prefix-Entry and other advanced syntax for mappings, usea
 |  - There are two equivalent prefixes for each entry type: One easy-to-type ASCII, one from the eD Shift+AltGr layer.  |
 |      →  |  %  : Send a literal string/ligature by the SendInput {Text} method                                         |
 |      §  |  $  : Send a literal string/ligature by the SendMessage method                                              |
-|      α  |  *  : Send ‹entry› as AHK syntax in which !+^# are modifiers, and {} contain key names                      |
+|      α  |  *  : Send ‹entry› as AHK syntax in which +^!# are modifiers, and {} contain key names                      |
 |      β  |  =  : Send {Blind}‹entry›, keeping the current modifier state                                               |
 |      †  |  ~  : Send the hex Unicode point U+<entry> (normally but not necessarily 4-digit)                           |
 |      Ð  |  @  : Send the current layout's dead key named ‹entry› (often a 3-character code)                           |
@@ -32,6 +32,10 @@ Overview over the EPKL Prefix-Entry and other advanced syntax for mappings, usea
 |      ®® |  ®# : Repeat the previous character. `#` may be a hex number. Nice for avoiding same-finger bigrams.        |
 |      ©‹name›  : Named Compose key, replacing the last written character sequence with something else.                 |
 |      ##       : Send the active system layout's Virtual Key code. Good for OS shortcuts, but EPKL can't see it.       |
+|  - Special α/β prefixed syntax: In addition to standard AHK code, a few extra directives are allowed.                 |
+|      OSM      : A modifier can be sent as a One-Shot-Mod with this. {Shift OSM} capitalizes the next letter.          |
+|      Sleep()  : ¢[Sleep(200)]¢ in α/β code pauses Send for 200 ms. Useful when a wait is needed between string parts. |
+|      Run()    : ¢[Run(".")]¢   in α/β code runs or opens any valid target, like the 'Open app/folder' menu choice.    |
 #=======================================================================================================================#
 ```
 
@@ -141,7 +145,7 @@ Pent-17 =   "           `^^^^^^^`            \n"
 KLM remapping codes used in the [`_eD_Remap`](./_eD_Remap.ini) file:
 ```
 ;;  This is a table of KeyLayoutMap (KLM) codes from the _eD_Remap.ini file. You can use QW### or Co### for EPKL Scan Code (SC) and Virtual Key (VK) names.
-;;  KLM codes are intuitive and make no difference between ANSI & ISO board types. Examples: QW_E, Co_F, QW_CM, QWSPC. For VK, vc=QW codes make the most sense.
+;;  KLM codes are intuitive and make no difference between ANSI & ISO board types. Examples: QW_E, Co_F, QW_CM, QWSPC. For VK, use vc(=QW) codes.
 ;;  XX======+======+======+======+======+======+======+======+======+======+======+======+======XX======+======XX======+======+======XX======+======+======+======XX
 ;;  ||Esc   |F1    |F2    |F3    |F4    |F5    |F6    |F7    |F8    |F9    |F10   |F11   |F12   ||Back  |Menu  ||PrtSc |ScrLk |Pause ||NumLk |KP /  |KP *  |KP -  ||
 ;QW || ESC  | _F1  | _F2  | _F3  | _F4  | _F5  | _F6  | _F7  | _F8  | _F9  | F10  | F11  | F12  || BSP  | APP  || PSC  | SLK  | PAU  || NLK  | PDV  | PMU  | PMN  ||

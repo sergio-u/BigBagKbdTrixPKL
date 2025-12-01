@@ -1,4 +1,4 @@
-﻿;;  ============================================================================================================================================================
+﻿;;  ================================================================================================================================================
 ;;  EPKL Get/Set ###Info module
 ;;  - Read and set global variables without having to declare them
 ;;  - Static associative dictionaries are used instead of most globals
@@ -42,7 +42,7 @@ setPklInfo( key, val )
 getKeyInfo( key, val := "", set := 0 )
 {
 	static pdic     := {}
-	if ( set == 1 )
+	If ( set == 1 )
 		pdic[key]   := val
 	Return pdic[key]
 }
@@ -50,7 +50,7 @@ getKeyInfo( key, val := "", set := 0 )
 getLayInfo( key, val := "", set := 0 )
 {
 	static pdic     := {}
-	if ( set == 1 )
+	If ( set == 1 )
 		pdic[key]   := val
 	Return pdic[key]
 }
@@ -58,12 +58,12 @@ getLayInfo( key, val := "", set := 0 )
 getPklInfo( key, val := "", set := 0 )
 {
 	static pdic     := {}
-	if ( set == 1 )
+	If ( set == 1 )
 		pdic[key]   := val
 	Return pdic[key]
 }
 
-;;  ============================================================================================================================================================
+;;  ================================================================================================================================================
 ;;  EPKL locale module
 ;;      Functions to set up locale strings
 ;;      Used by initPklIni() in pkl_init.ahk
@@ -73,38 +73,38 @@ pkl_locale_load( lang )
 {
 	static initialized  := false 	; Defaults are read only once, as this function is run on layout change too 	; eD WIP: Does that really work, or matter?
 	
-	if ( not initialized ) {    								; Read/set default locale string list
+	If ( not initialized ) {    								; Read/set default locale string list
 		For ix, sectName in [ "DefaultLocaleStr", "DefaultLocaleTxt" ] { 	; Read defaults from the EPKL_Tables file
 			For ix, row in pklIniSect( getPklInfo( "File_PklDic" ), sectName ) { 	; Read default locale strings (key/value)
 				pklIniKeyVal( row, key, val, 1 ) 				; Extraction with \n escape replacement
 				setPklInfo( key, val )
 			}
-		}	; end For
+		}   ; <-- For
 		initialized := true
 	}
 	
 	file := lang . ".ini"
 	file := ( bool(pklIniRead("compactMode")) ) ? file : "Files\Languages\" . file
-	if not FileExist( file ) 									; If the language file isn't found, we'll just use the defaults
+	If not FileExist( file ) 									; If the language file isn't found, we'll just use the defaults
 		Return
 	For ix, row in pklIniSect( file, "pkl" ) { 					; Read the main locale strings frome the PKL section
 		pklIniKeyVal( row, key, val, 1 ) 						; A more compact way than before (but still in a loop)
-		if ( val != "" ) { 						; LocStr_ 00-22,LaysSetts,AHKeyHist,MakeImage,ImportKLC,ZoomImage,MoveImage,RefreshMe...
+		If ( val != "" ) { 						; LocStr_ 00-22,LaysSetts,AHKeyHist,MakeImage,ImportKLC,ZoomImage,MoveImage,RefreshMe...
 			key := ( key <= 9 ) 
 					? SubStr("00" . key, -1) : key 				; If key is #, zero pad it to 0# instead
 			setPklInfo( "LocStr_" . key , val ) 				; pklLocaleStrings( key, val, 1 )
 		}
-	}	; end For
+	}   ; <-- For
 	
 	For ix, row in pklIniSect( file, "detectDeadKeys" ) { 		; Read the locale strings for DK detection  	; eD WIP: Phase this out? Use getWinLayDKs().
 		pklIniKeyVal( row, key, val, 1 )
 		setPklInfo( "DetecDK_" . key, val ) 					; detectDeadKeys_SetLocaleTxt(
-	}	; end For
+	}   ; <-- For
 	
 	For ix, row in pklIniSect( file, "keyNames" ) { 			; Read the list of keys and mouse buttons
 		pklIniKeyVal( row, key, val, 0 ) 						; Read without character escapes
 		_setHotkeyText( key, val )
-	}	; end For
+	}   ; <-- For
 }
 
 _setHotkeyText( hk, localehk )
@@ -116,11 +116,11 @@ _getHotkeyText( hk, localehk := "", set := 0 )
 {
 	static localizedHotkeys := ""
 	
-	if ( set == 1 ) {
+	If ( set == 1 ) {
 		setKeyInfo( "HKtxt_" . hk, localehk )
 		localizedHotkeys    .= " " . hk
 	} else {
-		if ( hk == "all" )
+		If ( hk == "all" )
 			Return localizedHotkeys
 		Return getKeyInfo( "HKtxt_" . hk )
 	}
@@ -154,7 +154,7 @@ getReadableHotkeyString( str ) 									; Replace hard-to-read, hard-to-print pa
 	Return str
 }
 
-;;  ============================================================================================================================================================
+;;  ================================================================================================================================================
 ;;  EPKL Composer module
 ;;      Set up compose string tables from a file
 ;;      The tables are used by pkl_Composer() in pkl_send.ahk
@@ -164,7 +164,7 @@ getReadableHotkeyString( str ) 									; Replace hard-to-read, hard-to-print pa
 init_Composer( compKeys ) { 									; Initialize EPKL Compose tables for all detected ©-keys
 	static initialized  := false
 	
-	if ( not initialized ) {
+	If ( not initialized ) {
 		cmpFile := getPklInfo( "CmposrFile" )
 		cmpStck := getPklInfo( "CmposrStck" )
 		CDKs    := pklIniCSVs( "CoDeKeys"     ) 				; An array of which named Compose keys are CoDeKeys – Compose+DeadKeys.
@@ -183,7 +183,7 @@ init_Composer( compKeys ) { 									; Initialize EPKL Compose tables for all de
 		initialized := true
 	}
 	
-	if compKeys.IsEmpty()
+	If compKeys.IsEmpty()
 		Return
 	usedTables  := {} 											; Array of the compose tables in use, with sendBS info
 	cmpKeyTabs  := {} 											; Array of table arrays for each ©-key
@@ -191,72 +191,71 @@ init_Composer( compKeys ) { 									; Initialize EPKL Compose tables for all de
 		tables  := pklIniCSVs( cmpKey, , cmpStck, "compose-tables" )
 		For ix, sct in tables { 									; [ "+dynCmk", "x11" ] etc.
 			sendBS      := 1
-			if ( SubStr( sct, 1, 1 ) == "+" ) { 					; Non-eating Compose sections are marked with a "+" sign
+			If ( SubStr( sct, 1, 1 ) == "+" ) { 					; Non-eating Compose sections are marked with a "+" sign
 				sct     := SubStr( sct, 2 )
 				tables[ ix ] := sct 								; Rewrite this tables entry without the "+" sign.
 				sendBS  := 0 										; Don't send Backspaces before the compose entry
 			}
-			if usedTables.HasKey( sct ) {
+			If usedTables.HasKey( sct ) {
 				Continue 											; This table was already read in, so proceed to the next one for this key
 			} else {
 				usedTables[ sct ] := sendBS 						; compTables[ section ] contains the sendBS info for that table section
 			}
 			For ix, len in seqLens { 								; Look for sequences of length for instance 1–4
 				keyArr%len% := {}   								; These reside in their own arrays, to reduce lookup time etc.
-			} 	; end for seqLens
+			}   ; <-- for seqLens
 			For ix, mapFile in cmpStck { 							; Read from the LayStack+1
 				For ix, row in pklIniSect( mapFile, "compose_" . sct ) {
-					if ( row == "" )
+					If ( row == "" )
 						Continue
 					pklIniKeyVal( row, key, val ) 						; Compose table key,val pairs
-					if ( RegExMatch(key,"U[[:xdigit:]]{4}") != 1 ) { 	; The key is a sequence of characters instead of a sequence of hex strings
+					If ( RegExMatch(key,"U[[:xdigit:]]{4}") != 1 ) { 	; The key is a sequence of characters instead of a sequence of hex strings
 						kyt := ""
 						kys := ""
 						For ix, chr in StrSplit( key ) { 				; Format the character string to a U####[_U####]* key
-							if ( ix == 1 ) { 
+							If ( ix == 1 ) { 
 								cht := upCase( chr ) 					; Also make an entry for the Titlecase version of the string key (if different)
 							} else {
 								cht := chr
-							} 	; end if ch1
+							}   ; <-- if ch1
 							kyt .= "_U" . formatUnicode( cht )
 							kys .= "_U" . formatUnicode( chr )
-						} 	; end for chr
+						}   ; <-- for chr
 						kyt := ( kyt == kys ) ? false : SubStr( kyt, 2 )
 						key := SubStr( kys, 2 )
-					} 	; end if string
+					}   ; <-- if string
 					dum := StrReplace( key, "U",, len ) 				; Trick to count the number of "0x", i.e., the pattern length (could count _ +1)
 					keyArr%len%[key] := val
-					if ( kyt && keyArr%len%[kyt] == "" ) 				; Only write the Titlecase entry if previously undefined.
+					If ( kyt && keyArr%len%[kyt] == "" ) 				; Only write the Titlecase entry if previously undefined.
 						keyArr%len%[kyt] := val
-				} 	; end for row
-			} 	; end for mapFile
+				}   ; <-- for row
+			}   ; <-- for mapFile
 			For ix, len in seqLens { 								; Look for sequences of length for instance 1–4
 				setLayInfo( "comps_" . sct . len, keyArr%len% )
-			} 	; end for seqLens
-		} 	; end for sct in tables
+			}   ; <-- for seqLens
+		}   ; <-- for sct in tables
 		cmpKeyTabs[ cmpKey ] := tables  							; For each named key, specify its required tables
 		tmp := ""
-	} 	; end for cmpKey in compKeys
+	}   ; <-- for cmpKey in compKeys
 	setLayInfo( "composeKeys"   , cmpKeyTabs ) 						; At this point, the tables don't contain "+" signs
 	setLayInfo( "composeTables" , usedTables )
 }
 
 lastKeys( cmd, chr := "" ) {    									; Manipulate the LastKeys array of previously sent characters for Compose
-	lastKeys := getKeyInfo( "LastKeys" )  							; A link to the actual LastKeys array (not a copy)
-	if        ( cmd == "push" ) { 									; Push one key to the lastKeys buffer
+	lastKeys := getKeyInfo( "LastKeys" )  							; This links to the actual LastKeys array, not a copy
+	If        ( cmd == "push" ) { 									; Push one key to the lastKeys buffer
 		lastKeys.Push( chr )
 		lastKeys.RemoveAt( 1 )
 	} else if ( cmd == "pop1" ) { 									; Remove the last entry in lastKeys (after Backspace presses)
 		lastKeys.Pop()  											; (We aren't using the pop value for anything)
 		lastKeys.InsertAt( 1, "" )
 	} else if ( cmd == "null" ) { 									; Reset the last-keys-pressed buffer.
-		setKeyInfo( "LastKeys", getKeyInfo( "NullKeys" ).Clone() ) 	; Note: Use Clone() here, or you'll make a link to NullKeys
+		setKeyInfo( "LastKeys", getKeyInfo( "NullKeys" ).Clone() ) 	; Note: Use Clone() here, or you'll make a link to NullKeys instead
 		Return
 	}
-;	setKeyInfo( "LastKeys", lastKeys )  							; Since we're editing the actual LastKeys array, this isn't needed
 }
 
-;;  ============================================================================================================================================================
+;;  ================================================================================================================================================
 ;;  EPKL other Get/Set functions
 ;
 

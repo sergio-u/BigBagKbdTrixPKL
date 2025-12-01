@@ -22,7 +22,7 @@
     - That is, my many layout mods and tweaks and bells and whistles. 
 * It's mostly centered around the brilliant Colemak keyboard layout,…
 * … with or without my own `[eD]` AltGr layers and dead keys,…
-* … **ergonomic mods** both for **Colemak**, the **Tarmak** learning layouts and **other layouts**,…
+* … **ergonomic mods** both for [**Colemak**][CmkCom], the [**Tarmak**][BBTtmk] learning layouts and **other layouts**,…
 * … and the incredibly useful [**Extend**][BBText] layers which work with any layout.
 * **DreymaR's Big Bag of Keyboard Tricks** at [**dreymar.colemak.org**][orgBBT] is my main info site.
     - On those pages, you can choose the Windows (flag icon) platform to see more about EPKL/Windows.
@@ -48,8 +48,8 @@ Getting EPKL up and running
     - For releases, the `EPKL.exe` binary is included. For commits, you must run `Compile_EPKL.bat` to produce it.
     - Note that some virus protection programs overreact to compiling Autohotkey (AHK) code of this type.
 * **FAST LANE:** If you simply want "vanilla Colemak" on a US/ANSI keyboard, just run EPKL.exe and type!
-    - If you insist on having the Caps key as Backspace instead of the superior Extend key…
-    - … in the [Layouts Default file][LayDef] find the first `;QWCLK = BACK` etc line and remove that semicolon…
+    - If you insist on having the Caps key as Backspace instead of the superior Extend key …
+    - … you can use the `Special Keys` tab of the `Layout/Settings` menu to do that …
     - … but first, read the ["Can I map…"](https://github.com/DreymaR/BigBagKbdTrixPKL#can-i-map-the-caps-key-to-backspace) section below to know your options!
 * Run EPKL.exe inside its main folder in any way you like! Check its tray menu in the bottom right-hand corner.
 * To make EPKL start up automatically with Windows, [add a shortcut to it in the Startup folder][StrtUp]:
@@ -82,7 +82,7 @@ If you find my info below and on the Big Bag pages too daunting and massive, do 
 
 External guides may not be fully updated to show everything the Layout/Settings menu can do for instance! So do try that, too.
 The Settings dialog holds some useful info points for each tab, and the KeyMapper tab has its own Help button.
-<br>
+<br><br>
 
 ![EPKL layout dialog](./Other/Docs/EPKL_Layout-UI.png)
 
@@ -135,6 +135,20 @@ The Settings dialog holds some useful info points for each tab, and the KeyMappe
 
 <br><br>
 
+"My Shift key is behaving oddly!"
+---------------------------------
+By default, EPKL's Shift keys are [sticky modifiers](https://en.wikipedia.org/wiki/Sticky_keys). 
+Many, including myself, find this handy since it allows you to type with less [chording][BBTseq]. 
+Typing champions like Sean Wrona have recommended Shift sequencing at high speeds, as it helps against the DOuble CApitalization ISsue.
+
+Most OSes can make at least the Shift keys sticky, but usually that makes them like dead keys: Waiting forever for a key to modify. 
+EPKL's sticky mods use a timer instead. If you don't act within the sticky time set (usually around half a second), the modifier is reset.
+
+Should you find the sticky mods feature bothersome, it's easy enough to tweak or remove. 
+Just go to the **Settings** tab of the **Layout/Settings** menu. There, you'll find a setting for **stickyMods** which you can set to `--` to disable it. 
+Or you could try tweaking the **stickyTime** setting to see if another timer delay could work for you.
+<br><br>
+
 "Can I map the Caps key to Backspace?"
 --------------------------------------
 Sure you can! But may I suggest you do something much better with it and use **[Extend][BBText]** for a lot more power? 
@@ -148,7 +162,7 @@ Using Extend, you can easily press <kbd>Ext</kbd>+<kbd>O</kbd> for <kbd>Backspac
 If you're still convinced you want to lose out on all that power and flexibility, then there are several ways you can do this:
 - **By Menu:** On the Layout/Settings menu's Special Keys tab, select your Caps key's desired behavior then allow EPKL to restart.
 - **By KeyMapper:** On the Layout/Settings KeyMapper tab, make a `VKey` or `SKey`-type <kbd>CLK</kbd> to <kbd>BSP</kbd> mapping and submit it.
-- **By File:** In your `EPKL_Layouts_` .ini file (Default or, if present, Override), find or make these lines under the `[layout]` section.
+- **By File:** In your [EPKL_Layouts file][LayDef] (Default or, if present, Override), find/make these lines under the `[layout]` section:
 ```
 ;QWCLK = BACK    	VKey 		; SC03a: CapsLock as Backspace (CAPITAL -> BACK)
 QWCLK = Extend  	Mod 		; SC03a: CapsLock as the Extend modifier
@@ -156,8 +170,8 @@ QWCLK = Extend  	Mod 		; SC03a: CapsLock as the Extend modifier
 ```
 - Add a semicolon before the line you don't want, and remove the one before the line you do want to use.
 - Note the bottom line there? You can actually have both: Backspace on tapping <kbd>Caps</kbd>, Extend on holding it!
-- It's actually the default setting for the KeyMapper tab of the Layout/Settings dialog. Press the Submit button and you're on.
-<br>
+- That's actually the default setting for the KeyMapper tab of the Layout/Settings dialog. Press button below and you're on:
+<br><br>
 
 ![EPKL settings dialog](./Other/Docs/EPKL_Settings-UI.png)
 
@@ -183,8 +197,8 @@ There are two main ways EPKL handles key presses intercepted by its keyboard hoo
     - The mapping format for key mapping is `<KEY SC> = <VK CODE> VKey` (or `<SC> SKey`).
 * **Single-Entry mapping** can be handy for some special use cases.
     - A `System` (or `SKey`) entry simply SC maps the key onto itself, allowing EPKL to see that key.
-    - A `Disabled` (or `--`) single-entry mapping does just that: Renders a key disabled and useless.
-    - A `Unmapped` (or `<>`) entry can be used by an override file to tell EPKL to leave that key alone.
+    - A `Disabled` (or `--`) single-entry mapping renders the key disabled and useless.
+    - A `Unmapped` (or `<>`) entry can be used by an override file. It tells EPKL to leave that key alone.
     - The mapping format for these commands is simply `<KEY SC> = <SINGLE ENTRY>`.
 * **State mapping** means that EPKL sends a character event onwards to the OS based on the current shift state.
     - The shift state is affected by Shift (held or on a Sticky Mod timer), AltGr and other layer modifiers.
@@ -194,7 +208,7 @@ There are two main ways EPKL handles key presses intercepted by its keyboard hoo
     - The mapping format for state mapped keys is described in the [State Mapping Syntax](#state-mapping-syntax) section below.
 * Any key may be key or state mapped. Layouts will generally contain one or the other type, but may contain a mix.
     - Wherever there is an eD-type layout available, you can use it as a key mapped one with the **eD2VK** type.
-    - The eD2VK layout type will read its BaseLayout only as key mapped. Any overriding mappings are read as-is.
+    - The eD2VK layout type will read its BaseLayout(s) only as key mapped. Any overriding mappings are read as-is.
 * Note that key mapped and state mapped input events are sent differently. See the next section.
 <br><br>
 
@@ -302,9 +316,9 @@ More Know-How
 * **PowerStrings** are shortcuts to text strings. These may be multiline, and may contain AutoHotKey syntax.
     - As an Example, try Extend+End in a text editor. It should produce an editable 'Yours truly' message footer.
 * **LayStack** is the stack of files that may hold layout definitions. From top to bottom priority:
-    - Layout_Override in your chosen layout folder, if present, holds personal key mappings and such
+    - Layout_Override in your layout folder, if present, holds personal changes such as key mappings
     - Layout, that is, the `Layout.ini` main layout file in your chosen layout folder
-    - BaseLayout, which may be pointed to and overridden by the Layout file
+    - BaseLayout(s), which may be pointed to and overridden by the Layout file
     - Layouts_Override, which may hold your personal layout settings and mappings
     - Layouts_Default, found in the root folder, holds default layout settings/mappings
     - Special dedicated files for Extend, DeadKeys, PowerStrings, Remaps etc etc.
@@ -373,12 +387,17 @@ The layouts and setup files may take a little tweaking to get what you want. The
 <br>
 
 #### Techy tips for EPKL:
-* EPKL is Viper and CSGO approved! Some of the fastest typists in the world have tested it and found it responsive enough.
-    - If you type above around 150 Words Per Minute, a little pace smoothing may occur. This shouldn't be a problem, mostly.
 * EPKL, being portable, doesn't need an install with admin rights to work. You must still be allowed to run programs.
 * I usually put a shortcut to EPKL.exe in my [Start Menu "Startup" folder][StrtUp] so it starts on logon, per user.
 * EPKL can also easily be used with the [PortableApps.com][PrtApp] menu by putting its folder in a `C:\PortableApps` folder.
     - If the PortableApps menu is run on logon it can start up EPKL for you too.
+* If you want to save space on your USB drive, you can make a more compact version. The files needed are:
+    - `EPKL.exe` and the `.ini` files in the main folder
+    - The `Files` folder
+    - In the `Layouts` folder: The layout subfolder(s) you're using, and any `BaseLayout` files defined there
+
+* EPKL is Viper and CSGO approved! Some of the fastest typists in the world have tested it and found it responsive enough.
+    - If you type above around 150 Words Per Minute, a little pace smoothing may occur. This shouldn't be a problem, mostly.
 * Look inside the various .ini files under Files and Layouts if you're interested! Much is explained there.
 * See my examples in the Extend file for some advanced mappings! These may be used in layouts and dead keys too.
 * EPKL uses both .ini and source files that may be UTF-8 Unicode encoded.
@@ -400,7 +419,7 @@ The layouts and setup files may take a little tweaking to get what you want. The
 |  - There are two equivalent prefixes for each entry type: One easy-to-type ASCII, one from the eD Shift+AltGr layer.  |
 |      →  |  %  : Send a literal string/ligature by the SendInput {Text} method                                         |
 |      §  |  $  : Send a literal string/ligature by the SendMessage method                                              |
-|      α  |  *  : Send ‹entry› as AHK syntax in which !+^# are modifiers, and {} contain key names                      |
+|      α  |  *  : Send ‹entry› as AHK syntax in which +^!# are modifiers, and {} contain key names                      |
 |      β  |  =  : Send {Blind}‹entry›, keeping the current modifier state                                               |
 |      †  |  ~  : Send the hex Unicode point U+<entry> (normally but not necessarily 4-digit)                           |
 |      Ð  |  @  : Send the current layout's dead key named ‹entry› (often a 3-character code)                           |
@@ -410,6 +429,10 @@ The layouts and setup files may take a little tweaking to get what you want. The
 |      ®® |  ®# : Repeat the previous character. `#` may be a hex number. Nice for avoiding same-finger bigrams.        |
 |      ©‹name›  : Named Compose key, replacing the last written character sequence with something else.                 |
 |      ##       : Send the active system layout's Virtual Key code. Good for OS shortcuts, but EPKL can't see it.       |
+|  - Special α/β prefixed syntax: In addition to standard AHK code, a few extra directives are allowed.                 |
+|      OSM      : A modifier can be sent as a One-Shot-Mod with this. {Shift OSM} capitalizes the next letter.          |
+|      Sleep()  : ¢[Sleep(200)]¢ in α/β code pauses Send for 200 ms. Useful when a wait is needed between string parts. |
+|      Run()    : ¢[Run(".")]¢   in α/β code runs or opens any valid target, like the 'Open app/folder' menu choice.    |
 #=======================================================================================================================#
 ```
 
@@ -428,9 +451,9 @@ The layouts and setup files may take a little tweaking to get what you want. The
 * Here's the "LayStack" for layout info priority. Mappings/settings at higher levels take precedence:
     1. A `Layout_Override.ini` file in the chosen Layout folder will get the last word about everything.
     2. The `Layout.ini` file in the chosen Layout folder typically defines names, remaps and key overrides.
-    3. The `BaseLayout` .ini file usually found under each layout type may define most of the layout
-    4. The [EPKL_Layouts_Override][LayOvr], if present, overrides default layout choices
-    5. The [EPKL_Layouts_Default][LayDef] holds default and common layout settings/mappings
+    3. The `BaseLayout` .ini file(s) usually found under each layout type may define most of the layout.
+    4. The [EPKL_Layouts_Override][LayOvr], if present, overrides default layout choices.
+    5. The [EPKL_Layouts_Default][LayDef] holds default and common layout settings/mappings.
     6. Beyond this, specialized files may hold settings, info, Extend or DeadKey mappings etc. See below.
 <br>
 
@@ -522,9 +545,9 @@ KNOWN ISSUES
 * Running EPKL with other key mapping programs may be problematic due to _hook competition_.
     - When keyboard hooks compete, it becomes uncertain which hook gets which key press, with unpredictable results.
     - Unfortunately, this includes some of the functionality of the popular [Microsoft PowerToys](https://apps.microsoft.com/detail/xp89dcgq3k6vld) tool suite.
-    - It also includes other AutoHotkey scripts using hotkeys.
+    - It also includes [other AutoHotkey scripts using hotkeys](https://www.autohotkey.com/boards/viewtopic.php?t=127074).
     - To some extent, you could include other scripts into EPKL if you know how to, or replicate their functionality within EPKL.
-* The AHK `Send` command used by some EPKL mappings, sends a `KeyDown` shortly followed by a `KeyUp`.
+* The AHK `Send` command used by most EPKL mappings, sends a `KeyDown` shortly followed by a `KeyUp`.
     - This does produce a key press with the desired character/key.
     - However, when holding down a key for a while Windows really sends repeated `KeyDown` events and `KeyUp` only on key release.
     - This discrepancy often messes with games. The `KeyUp` events tend to interrupt held-down keys, resulting in choppy game controls.
@@ -582,8 +605,10 @@ _Øystein "DreymaR" Bech-Aase_
 [CmkOrg]: https://www.colemak.org (The Colemak Community site)
 [orgBBT]: https://dreymar.colemak.org/ (DreymaR's Big Bag of Keyboard Tricks)
 [BBText]: https://dreymar.colemak.org/layers-extend.html (about Extend, in DreymaR's Big Bag of Keyboard Tricks)
+[BBTtmk]: https://dreymar.colemak.org/tarmak-intro.html  (about Tarmak, in DreymaR's Big Bag of Keyboard Tricks)
 [BBTawi]: https://dreymar.colemak.org/ergo-mods.html#angle-wide (about the Angle/Wide ergo mods, in DreymaR's Big Bag of Keyboard Tricks)
 [BBT_eD]: https://dreymar.colemak.org/layers-colemaked.html (about Colemak-eD layers, in DreymaR's Big Bag of Keyboard Tricks)
+[BBTseq]: https://dreymar.colemak.org/layers-main.html#sequences (about sequencing vs chording modifiers)
 [CmkBBT]: https://forum.colemak.com/topic/2315-dreymars-big-bag-of-keyboard-tricks-main-topic/ (BigBagOfKbdTrix on the Colemak forums)
 [CmkPKL]: https://forum.colemak.com/topic/1467-dreymars-big-bag-of-keyboard-tricks-pklwindows-edition/ (BigBag-PKL on the Colemak forums)
 [StrtUp]: https://support.microsoft.com/en-us/help/4558286/windows-10-add-an-app-to-run-automatically-at-startup (Windows Startup folder)
@@ -612,3 +637,5 @@ _Øystein "DreymaR" Bech-Aase_
 [DKsIni]: ./Files/_eD_DeadKeys.ini (EPKL DeadKeys file)
 [CmpIni]: ./Files/_eD_Compose.ini (EPKL Compose file)
 [SrcPMn]: ./Source/EPKL_Source/_PKL_main.ahk
+
+[KLFC39]: https://github.com/39aldo39/klfc (Aldo Gunsing-s Keyboard Layout Files Creator/Converter)

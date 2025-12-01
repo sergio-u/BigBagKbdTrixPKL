@@ -2,8 +2,8 @@
 ========================================================
 <br>
 
-- Version:  1.4.1 End-Of-Life
-- Compiled: 2024-03 from GitHub/DreymaR/BigBagKbdTrixPKL
+- Version:  1.4.2
+- Compiled: 2025-04 from GitHub/DreymaR/BigBagKbdTrixPKL
 - Compiler: AutoHotKey v1.1.27.07 Unicode 32 bit
 <br>
 
@@ -29,7 +29,8 @@ For a detailed version history, look further down.
 * EPKL v1.3.1: Compose/Completion developments. Folder/file restructuring. Cmk Heb/Epo/BrPt/Nl variants, Ortho kbd types, Boo layout, Dvk-Sym.
 * EPKL v1.4.0: Better Send for key mapping. ScanCode key mapping. Dual-function CoDeKey (Compose+Dead key).
 * EPKL v1.4.1: Timerless EPKL! State-2-VK mapping types. SwiSh & FliCK modifiers. Layout_Override.
-* EPKL v1.4.2: Layout/Settings enhancements. Ext-tap rework.
+* EPKL v1.4.2: Layout/Settings enhancements. Mapping additions and reworks.
+* EPKL v1.4.3: Ortho help images. WIP.
 ```
 <br>
 
@@ -424,7 +425,7 @@ VERSION HISTORY:
 	- For the Nl locale, the ISO key was reclaimed as Compose! Kept <kbd>ij</kbd> on the images. Note that composing ij/IJ makes the ĳ/Ĳ ligature.
 		-  Also, a Compose completion was added so that <kbd>i</kbd>,<kbd>©</kbd> → `ij`.
 	- Esperanto variant, based on Compose. Like the normal Colemak-eD but with composes for ĉĝĵŝŭ added.
-		- Compose key on <kbd>X</kbd> for ANSI, since X isn't used in Esperanto. To type X, hit <kbd>K</kbd>, <kbd>X</kbd> or <kbd>AltGr</kbd><kbd>X</kbd>.
+		- Compose key on <kbd>X</kbd> for ANSI, since X isn't used in Esperanto. For X, hit <kbd>K</kbd>, <kbd>X</kbd> or <kbd>AltGr</kbd><kbd>X</kbd>.
 	- Added Hebrew layouts. See the `Cmk-eD-Heb` layout folder and the Forum Locale post.
 	- Fixed: A CapsLock off is sent at startup to avoid CapsLock being stuck on after an EPKL refresh.
 	- Fixed: Using relative paths for icon files, multiple layout selections wouldn't show the correct icons.
@@ -482,7 +483,7 @@ VERSION HISTORY:
 	- Fixed: VK-mapped PgUp,PgDn,End,Home,Ins,Del and arrows had their NumPad versions sent as per AHK Send default, due to degenerate VK codes.
 		- ScanCodes are now added to the VirtualKey codes (VK21–28,2D–2E) so their normal versions (SC 149,151,14F,147,152,153 etc) are sent.
 	- Fixed: QWERTY-VK layouts pointed to the Colemak-VK BaseLayout_Cmk-VK without the Cmk-VK subfolder.
-	- Fixed: An end-of-line comment in the baseLayout entriy would cause the layout to fail.
+	- Fixed: An end-of-line comment in the baseLayout entry would cause the layout to fail.
 	- Prefix-Entry documentation updated, in main and Files README. Also added to the KeyMapper Help screen.
 	- Cmk-CAWS-eD MicroSoft Keyboard Layout Creator `.KLC` files in `Other\MSKLC`, both w/ ISO-Angle and an ANSI-Angle(Z) mods. Builds in `.zip` files.
 		- Vanilla Colemak-eD also added to the MSKLC folder. The Vanilla layout is ISO/ANSI agnostic.
@@ -490,7 +491,9 @@ VERSION HISTORY:
 		- That way, you only have to uncomment the first `;[pkl]` to get Tarmak! Much simpler. Also, more settings can be uncommented and ready.
 	- Tidied up the Tarmak layout files, using existing BaseLayout/remaps instead of explicit VK mappings.
 	- Separated the layout shorthand `@L` into LayMain (`@L`) and LayPath (`@P`). It's clearer, and you can use `@L` as LayName in description strings.
-	- Dead key images for Colemak-CAW variants now point to CAWS images since I'll be trying to support only the best and most popular combos.
+	- Decided to support DK images and suchlike mainly for Cmk vanilla, CA and CAWS. I consider these the best and/or most popular combos.
+		- Dropped Cmk-CAW support for she sake of my own sanity; there are now links to CAWS DeadKey images in files.
+		- I don't think a lot of people use plain AWide today. And they can always generate their own images.
 	- Added the Semimak-JQ variant. It's a simple `Q > J > QU` cycle from the original.
 	- Reworked the Greek Colemak locale layouts, replacing the rare diaeresis letters on Q and ISO with Tonos/Diaeresis DKs and the default Compose.
 		- Note that the Compose method allows accented/polytonic Greek letters to be written as sequences using punctuation.
@@ -539,35 +542,117 @@ VERSION HISTORY:
 		- KeyUp was put on a 1 ms timer like KeyDn had, to ensure it doesn't sneak past a last KeyDown of a repeating key.
 		- Eventually though, the whole timer system was removed to make EPKL timerless.
 	- Fixed: NumPadDot was state mapped as an explicit dot/comma key. This behavior is unintuitive, so it's been relegated to `EPKL_Layouts_Override_Example`.
-* EPKL v1.4.2: Layout/Settings enhancements. Ext-tap rework.
-	- Reworked Settings GUI globals. Now these are initialized at startup, hopefully making GUI creation a bit faster.
-		- Also made an array of layout folders: Subfolders under "Layouts" contaning a "Layout.ini" file and fulfilling certain naming criteria.
-		- This way, no layout folder read nor FileExist checks are necessary at GUI creation/selection time.
+* EPKL v1.4.2: Layout/Settings enhancements. Mapping additions and reworks.
+	- A `¢[Cmd()]¢` syntax useable within α/β AHK code. Sends the first part of the string, executes the specified command and then proceeds sending.
+		- The pkl_exec() fn governs specified commands for sent strings; it could be expanded with several new AHK commands.
+		- For now, Sleep() and Run() are what I felt were most needed. Sleep() helps timing string parts, while Run() adds new mapping options.
+		- Using these new syntax possibilities, some Ext-tap mappings were added or improved.
+	- The BaseLayout can now be a stack. for instance a "Variant" or "Top" BaseLayout pointing to a main or "Deepest" BaseLayout.
+		- The BaseStack should be mostly safe from self-reference and recursion. It has an arbitrary max depth of 3, for now.
+		- Reworked Graphite-HB, Gralmak, Cmk-Epo and Cmk-Kyr to utilize the BaseStack. Most locale variants were left alone, for now.
+		- This removes the need to replicate relevant changes in all Layout.ini files for a variant. These could ideally hold mostly ergo remaps.
 	- Instead of an array of Compose sequence lengths, now there's just `bufSize` for max length. Sequences are processed from longest to shortest.
 	- More ways to reset the Composer queue. Backspace pops the last key as before. Del/Enter/Esc Ctrl+Back and AHK syntax (α prefix) now delete the queue.
 		- This fixes a problem with using powerstrings for Delete Word, as they would leave undesired characters in the lastKeys queue.
 	- ToM mappings required a VK code before the slash but an AHK modifier name after. Now, you can use any modifier alias (VK or KLM name).
 		- `[LR]?(SHIFT|CONTROL|MENU|WIN)`, `vc(SHF|CTL|ALT|WIN)` and `vc[LR](SH|CT|AL|WI) should all work now.
 		- https://github.com/DreymaR/BigBagKbdTrixPKL/discussions/64
+	- Reworked Single-Entry key mapping. In addition to `vk|vkey` and `sc|skey|system`, `--|disabled` disables a key and `<>|unmapped` leaves it alone.
+		- The main purpose of `Unmapped` is to allow an Override file such as `Layout_Override.ini` to instruct EPKL to leave a key untouched.
+		- Added a `Single-Entry` mapping type in the KeyMapper, with these four "Map to..." flavors.
+		- Changed the Special Keys CapsLock entry in the Settings GUI to `Unmapped`. This makes reclaiming the CapsLock key (at the user's loss) easier.
+	- The SymMn (only the MINUS key loop) partial mod is now a named Remap. Fits layouts with no symbol in the QWERTY `P` position.
+		- This includes Semimak, APTv3 and other alternative keyboard layouts. Also, the AWS_@K remap now uses SymMn.
+	- Reworked Settings GUI globals. Now these are initialized at startup, hopefully making GUI creation a bit faster.
+		- Also register an array of layout folders: Subfolders under "Layouts" contaning a "Layout.ini" file and fulfilling certain naming criteria.
+		- This way, no layout folder read nor FileExist checks are necessary at GUI creation/selection time.
 	- A template for implementing new layouts, under `Layouts\_Template`. See its `README` file for more info.
-	- Using the NewLayout template framework, a few more modern layouts were added; Semimak-JQ and Canary were already in place.
+	- Using the NewLayout template framework, a few more modern layouts were added. Semimak(-JQ) and Canary were already in place.
 		- The APT(v3) layout by Apsu, with Angle, Wide and Sym ergo mods.
+		- The Sturdy layout by Oxey, with an Angle ergo mod. Wide and Sym ergo mods are WIP for Sturdy (and Graphite), for now.
 		- The Graphite layout by Richard Davison alias 'stronglytyped'. Also a keymap-friendly Graphite-HB variant (no shift state changes).
-		- The Sturdy layout by Oxey, with an Angle ergo mod.
-		- Wide and Sym ergo mods are WIP for both Graphite and Sturdy, for now.
-	- The SymMn (only the MN loop) partial mod is now a named Remap. Fits layouts with no symbol in the QWERTY `P` position.
-		- This includes Semimak, APTv3 and several other alternative keyboard layouts.
+		- The very similiar Gallium layout by Bryson James alias 'GalileoBlues'.
+		- With the Gallium & Graphite layouts, "Galliard" and "Gralmak" variants w/ symbol key mappings as in Cmk-CAWS.
+	- Added Ukrainian "Ukromak" (Cmk-Ukr), based on a commit by Grenudi (https://github.com/DreymaR/BigBagKbdTrixPKL/pull/92).
+		- Switched all Kyr script locale codes from 2-letter to 3-letter ISO codes (ISO 639-1 to 639-2): Ru-Rus, Uk-Ukr, Bg-Bul.
 	- Fixed: Several Layout Selector GUI bugs.
 		- Fixed a Layout Selector bug for Cmk (which uses a subdir), causing the loss of a backslash in the layout path.
 			- It was broken in commit "Reworked Settings GUI initalization " (12d964a) 2023-07-13, in the file `pkl_gui_settings.ahk`.
 		- Fixed a Layout Selector bug that would allow an invalid KbdType to show up if another LayType had that KbdType.
 		- Any LayDir not starting with the LayMain's 3LA (usually the 3 first letters) is not shown in the Layout Selector anymore.
 	- Fixed: HIG only made "state0.png" (really the last state) plus state0.svg.png (actual state0) instead of the state images it should.
-		- InkScape v1.3 (2023-07) had a bug affecting batch export. Should be fixed in later versions. The HIG works w/ the standalone v1.2.1 install.
-	- Reworked Ext-tap DK layers. The URL and BBC tags weren't universally useful, somewhat unintuitive and better solved as sequences anyway.
-		- Instead, added Ctrl+W/S/etc shortcuts, and moved some old shortcuts around. Still uncertain about symbols for these layers, due to ToM timing.
-	- Reworked Single-Entry key mapping. In addition to `vk|vkey` and `sc|skey|system`, `--|disabled` disables a key and `<>|unmapped` leaves it alone.
-		- The main purpose of `Unmapped` is to allow an Override file such as `Layout_Override.ini` to instruct EPKL to leave a key untouched.
-		- Added a `Single-Entry` mapping type in the KeyMapper, with these four "Map to..." flavors.
-		- Changed the Special Keys CapsLock entry in the Settings GUI to `Unmapped`. This makes reclaiming the CapsLock key (at the user's loss) easier.
+		- InkScape v1.3 (2023-07) had a bug affecting batch export. Fixed in later versions. The HIG works w/ the standalone v1.2.1 install.
+	- Tweaked the dialog GUI and several settings' names for the HIG, to hopefully be a little more descriptive.
+	- Reworked Ext-tap DK layers.
+		- The URL and BBC tags weren't universally useful, somewhat unintuitive and better solved as sequences anyway.
+		- Added WheelUp/Dn to Ext-tap, on the same keys as on Ext (Cmk W/R). Moves on Cmk: `Cap` Pp → Ll, `^w` Ww → Pp, `w³?` L → U.
+			- This is handy for scrolling (web) pages, in conjunction with the other Ext/Ext-Tap MouseWheel and PgUp/Dn mappings.
+		- The NEIO `!,.?` Ext-tap mappings were unused: They work a lot better on CoDeKey due to Ext-tap ToM timing issues.
+			- Considered something arrow-based like Ctrl(+Shift)+Arrows/Delete, but none of it felt really useful.
+			- Kept `!` for now, as it's the most unaccessible symbol. Moved `^a #e #i +↓` etc around, added `⌫ʷ` and left less accessible keys empty.
 	- Rewrote the Kaomoji mappings as PowerStrings, so they are easily and consistently useable both for Kaomoji DK mappings and Compose sequences.
+	- Tested whether GitHub Flavored Markdown can support `style="background-color:white;"` or similar html/MD 
+		- This could make EPKL layer images work with dark browser themes. Today those are shown as black-on-dark.
+		- Unfortunately, the result was negative. I found no solutions online; only plenty of complaints about this shortcoming of GF Markdown.
+	- A `runTarget` hotkey that by default opens or focuses on the main EPKL folder. Ctrl+Shift+7 was available, by moving the MoveImage Hotkey.
+		- Any location, file or app can be set as the `openMenuTarget`. Files and folders are opened by their default programs.
+	- The menuIconList function from Source\Extras was internalized, callable as the "debug" function. It shows icons and their positions in any file.
+	- Reworked HIG image tags. Now, any `«##» ` tag in a state/DK/Ext mapping is cut off and stored before the mapping is processed.
+	- PwrStrings are now pre-read into memory at the first use of a PwrString. Hopefully, this will aid speed and reduce disk access.
+	- Made a common useDots() fn to sort out relative file/dir paths, for use both by pklIniRead() and the new _seekBaseLayout().
+* EPKL v1.4.3: Ortho help images. WIP.
+	- Split KbdType into KbdType (ANS/ISO) and GeoType (RowS/Orth; RowS is default) in init, by the first hyphen.
+		- Can then use a KbdType like `ANS-Orth` in layout files.
+	- Made a matrix/ortho image template, for ortho variants such as Curl w/o Angle, and more compact help images.
+		- Removed the Space/Modifier row. Added Space and AltGr at the lower right, in yellow. No Backspace nor Enter.
+		- One extra column, with Grave - ISO - Ext marker - Shift. Saves 2u (15u -> 13u) and one row (5r -> 4r).
+		- Added values for the Ortho geometries to imgPos/imgSize settings. Used in make_img based on GeoType.
+		+-------------------------------+
+		|  `  1 2 3 4 5 6 7 8 9 0 - =   |
+		| ISO q w f p b j l u y ; [ ]   |   	Colemak ortho template
+		| Ext a r s t d h n e i o ' \   |   	13 columns, 4 rows = 704,226 px (70% of 812,282 px)
+		| Shf z x c v b k m , . / ␣ AGr |
+		+-------------------------------+
+		- Several layout variants are now premade both as ISO/ANS and ISO/ANS-Orth, for `<none>` ergo mods.
+		- Cmk-Curl doesn't get a premade `<none>` option, as it should use Angle w/ row-stag. If you really want it, use `-Orth`.
+	- Some may prefer Ortho help images as they're more compact. For this, we need to account for Wide mods.
+		- Made an Ortho-Wide background, and a WideSym (WS) mod combo.
+		- The 6 vs 7 problem: I put 6-on-left for my row-stag boards. Real Ortho users will want it on right.
+		- Made a 6-7 remap that can easily be added to remedy any such issues, e.g., `mapSC_# = AWS_@K,6-7`.
+		+-------------------------------+
+		|  `  1 2 3 4 5 \ 6 7 8 9 0 =   |
+		| ISO b l d w q [ j f o u ' -   |       Gralmak_Ortho-WideSym; w/o the 6-7 remap, it'd be `5 6 \ 7`
+		| Ext n r t s g ] y h a e i ;   |
+		| Shf z x m c v / k p , . ␣ AGr |
+		+-------------------------------+
+		- For an Ortho-Wide variant, don't use an Angle mod. Decide what you wish to do with the 6-7 issue.
+			- To use the ortho images with a normie board, you can turn on the Angle mod again in your Layout_Override.
+			- Another tack is to use your normie layout and in its Layout_Override use `img_` settings; see the example file.
+	- Swapped NumPad `* -` on the Ext2 layer. It just feels more natural and NumPad-like.
+		- The NumPad layer didn't feel good w/ respect to the traditional top-row `/ * -`. The `+ ↵` were okay.
+		- NumPads sometimes have minus above one-row plus. (These may have Backspace in the corner spot.)
+		- Now, `* /` are on the same column, and right above each other on ISO/Ortho-Wide setups.
+		+-----------+
+		| 7 8 9 - * |       Was: * -
+		| 4 5 6 + / |
+		| 1 2 3 ↵ ' |
+		| 0 0 ,     |
+		+-----------+
+	- A DeadkeyImg folder specified as img_DKeyDir is now prioritized over a local one.
+	- The "Open app/folder" menu & hotkey now opens the active layout's folder by default, instead of EPKL root (target ".").
+		- Made a `ŁayÐir` special run-target syntax for the active layout's folder. This is now the default for runTarget().
+	- Made ortho naming more consistent. There were some layouts using `Orth`, and others `Ortho`. Now all are `Orth`.
+		- Technically, you can use both as KbdType. But it's inconsistent to say `ANS-Ortho`, instead of `ANS-Orth` or `ANSI-Ortho`.
+	- Minor CoDeKey rework. Swapped `^`/`~` to Cmk J/B, added ` ... ` on `.` and triple-backtick on Cmk Shift+P.
+		- On ortho boards at least,`^` now sits right under 6. And the fancy 3-`` PowerString doesn't work on Discord.
+		- Also added Enter+Shift and Enter-Bullet-Space-Shift mappings.
+	- Fixed: Hitting Enter when any DK was active would output Ctrl+Shift+J, which opens the Parent Process Browser Console in Firefox.
+		- Adding `{Enter}` to `endDKs` (the list of keys that cancel DKs) solved the issue.
+	- Shift/AltGr+Repeat now repeats 2–4 times (2:Sh,3:AGr,4:Sh+AGr).
+	- Tapping Repeat with the LastKeys queue empty, now clears all OneShotMod timers.
+		- This helps when, say, the CoDeKey has sent punctuation-space-capitalization and you don't want the capitalization.
+	- "Add Layout" button in the Layout Selector GUI. Appends the selected layout to the current layout line.
+		- Also a field showing the currently active layout line. For the advanced, this is editable if you want full control.
+	- DK escape keys except Back/Esc/Del now send their key output. If you press Enter or arrow keys etc. with a DK active, they work.
+	- Allowed empty HIG tags («») to display nothing on help images for a key entry
+	- `α¢[OSM(<Mod>)]¢` allows sending a OneShotMod akin to `{<Mod> OSM}` syntax. Also, `α¢[OSM(0)]¢` clears all OSMs.

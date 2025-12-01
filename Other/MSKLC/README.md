@@ -14,13 +14,14 @@ The files in this folder aren't for EPKL but for Microsoft's MSKLC program.
 <br>
 
 - MSKLC can be installed from [Microsoft's Download Center][MSKLCd]. With it you can look at existing Win layouts and make new ones.
+- The installer needs the Microsoft [.NET Framework v3.5][dNet35] (not the latest version), so get and install that first.
 - This is Microsoft's own tool for generating installable layouts. It was made chiefly for creating QWERTY locale variants.
 - As such, it's a bit limited and confusing. Actually, the underlying code can do a lot more but the user interface has limits.
 - One such limit is that VK (VirtualKey) codes aren't shown in the GUI. These affect system shortcuts such as `Ctrl+<letter>`.
 - If you dabble in layout editing with MSKLC, you may have to edit your .klc file directly to get VK codes right.
 - For a good guide to basic and advanced MSKLC usage, see [Henri's MSKLC Guide][MSKLCg].
 	- In Henri's guide you'll also learn to do advanced stuff like swapping system keys (e.g., CapsLock-to-Backspace).
-	- If you're eager to map CapsLock to Backspace though, please do consider that EPKL's Extend is so very much better!!!
+	- If you're eager to map CapsLock to Backspace though, please do consider that EPKL's Extend is a whole lot better!!!
 <br>
 
 - **NB: RESTART REQUIRED!!!**
@@ -60,6 +61,7 @@ _Colemak-CurlAngleWideSym layout, alias Cmk-CAWS, on an ISO keyboard._<br>_AltGr
 Installing a MSKLC Layout
 -------------------------
 - To install a layout from a `.klc` file, it must first be compiled using the `Build DLL and Setup Package` menu option in MSKLC.
+- First, you may want to set its default folder to something else than the default `My Documents` (lower right button).
 - To install a compiled layout, run the `setup.exe` program in its folder. Setup will choose the right `.msi` and `.dll` for you.
 - The keyboard verify log may well give a lot of warnings about glyphs being defined twice etc; these don't matter.
 - If you have the layout already on your system – let's say you've edited it a little – you must **uninstall** it before compiling.
@@ -99,10 +101,36 @@ Technicalities
 	- Make sure the line endings and encoding are right.
 	- If you get `UTF-8` encoding and Linux endings as is native for GitHub, set them right using, e.g., the Notepad++ program.
 - By downloading the repo as a .zip file you should get the right `.klc` file formats, with correct encoding and line endings.
+<br>
+
+Compiling your own klc
+----------------------
+- Beware: I'm no expert at this, and it's only for the most tech savvy people with special layout needs. Here be dragons.
+- Compiling your own myLayout.dll from a myLayout.klc can be useful if, say, you want to move or repurpose a non-glyph key.
+- MSKLC is actually [just a front-end for a C compiler, resource compiler and a linker][LevKLC], included in its i386 folder.
+- First, `kbdutool.exe` generates C source files (.c, .def, .h, .rc). Then, it compiles and links these into an installer for the DLL.
+- I think you'll need a Windows `cmd` shell with admin rights, or a PowerShell, to run it.
+- You'll want to add the `-u` switch for Unicode `.klc` files (nearly all files these days), and `-m` if you have an AMD processor.
+```
+Usage: KbdUTool [-v] [-n] [-w] [-k] [-n] [-u|a] [-i|x] file
+
+	[-?] display this message
+	[-a] Uses non-Unicode source files (default)
+	[-i] Builds for IA64
+	[-m] Builds for AMD64
+	[-n] no logo or normal build information displayed
+	[-u] Uses Unicode source files
+	[-v] verbose diagnostics (and warnings, with -w)
+	[-w] display extended warnings
+	[-x] Builds for x86 (default)
+```
+- Is the `-s` switch needed to produce source files, in newer versions?
+- Apparently, by setting your generated/edited [source files to read-only][CmkKLC], you can then [use kbdutool to compile them][BepKLC]!
 
 
 [MyCAWS]: ./Cmk-CAWS-eD-ISO.klc (DreymaR's MSKLC Colemak-CAWS layout file)
-[MSKLCd]: https://www.microsoft.com/en-us/download/details.aspx?id=102134 (MSKLC download at the Microsoft Download Center)
+[MSKLCd]: https://www.microsoft.com/en-us/download/details.aspx?id=102134                       (MSKLC download at the Microsoft Download Center)
+[dNet35]: https://dotnet.microsoft.com/en-us/download/dotnet-framework/net35-sp1                (Microsoft .NET Framework v3.5 downloads)
 [MSKLCg]: https://msklc-guide.github.io/ (Henri's MSKLC Guide)
 [BBergo]: https://dreymar.colemak.org/ergo-mods.html (DreymaR's Big Bag of Keyboard Tricks, on ergo mods)
 [BBeDdk]: https://dreymar.colemak.org/layers-colemaked.html (DreymaR's Big Bag of Keyboard Tricks, on Colemak[eD])
@@ -114,3 +142,8 @@ Technicalities
 [CmkeDr]: https://github.com/DreymaR/BigBagKbdTrixPKL/raw/master/Other/MSKLC/Cmk-eD.klc          (KLC file for vanilla Colemak-eD)
 [CAWSAr]: https://github.com/DreymaR/BigBagKbdTrixPKL/raw/master/Other/MSKLC/Cmk-CAWS-eD-ANS.klc (KLC file for Colemak-CAWS-eD-ANSI)
 [CAWSIr]: https://github.com/DreymaR/BigBagKbdTrixPKL/raw/master/Other/MSKLC/Cmk-CAWS-eD-ISO.klc (KLC file for Colemak-CAWS-eD-ISO)
+
+[LevKLC]: https://levicki.net/articles/2006/09/29/HOWTO_Build_keyboard_layouts_for_Windows_x64.php  (Levicky on kbdutool++ workings)
+[CmkKLC]: https://forum.colemak.com/topic/870-hacked-msklc-to-enable-remapping-capslock/p2/#p23010  (Cmk Forum on kbdutool tips)
+[BepKLC]: https://bepo.fr/wiki/Utilisateur:LeBret/Remplacer_AltGr_par_Kana                          (Bépo on changing a key using kbdutool)
+[ARMKLC]: https://learn.microsoft.com/en-au/answers/questions/2151451/microsoft-keyboard-layout-creator-(msklc)-for-wind (Building .dll for ARM)

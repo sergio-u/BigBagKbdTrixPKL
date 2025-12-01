@@ -10,13 +10,14 @@ Layouts info
 ------------
 This is where EPKL keeps its layout files.
 * Layout folders can be organized by main layout, variants and mods. But they don't have to be.
-* The folder name describes its features.
+* A main layout folder can organize a tree of variant and mod subfolders.
+* Layout variant/mod folder names describe layout/variant/mod features. These are used by the Layout Selector.
 	- It starts with a three-letter abbreviation (`3LA`) for the main layout.
 	- Next (preceded with a hyphen) follows the layout type, such as `VK` (VirtualKey) or `eD` (my state mappings).
-	- Next comes the variant. These may be anything really, but they're often locales such as `BrPt` for Brazil/Portugal.
+	- Next comes the variant. These may be anything really – they're often locales such as `BrPt` for Brazil/Portugal.
 	- The names of the layout folders themselves then contain the keyboard type (`ISO`/`ANS`), flanked with underscores.
-	- The last part is the mod. Again, anything's possible but mine are generally of the `CurlA(ngle)WideSym` type.
-* Every actual layout variant/mod folder must contain a `Layout.ini` file. This file defines the layout.
+	- The last part is the mod. Again, anything's allowed; mine are generally a `CurlA(ngle)WideSym` [ergonomic][BBtErg] combo.
+* Every layout variant/mod folder must contain a `Layout.ini` file. This file defines the layout.
 	- A `Layout.ini` file may point at a `BaseLayout` file that defines common features for the main layout.
 	- Default common features for all layouts are in the `EPKL_Layouts` files in the main folder.
 	- This file hierarchy is known as the `LayStack`. There's a mini-stack for general settings too. See the [main EPKL Readme][EPKLgh].
@@ -25,9 +26,9 @@ This is where EPKL keeps its layout files.
 Available layouts
 -----------------
 I don't try to provide all possible layouts with EPKL, obviously. The ones you will find here are in these categories:
-* Useful and recommended, such as Colemak(!) or, say, Canary(?)
+* Useful and recommended, such as Colemak(!) or, say, Canary/Gallium/Graphite/...?
 * Of historical interest, such as Dvorak or QWERTY
-* Interesting to me and of some promise at the time (Boo, ISRT, MTGAP, Semimak etc)
+* Interesting to me and of some promise at the time (Boo, ISRT, MTGAP, Semimak, Sturdy etc)
 * Just for fun! (Foalmak, QUARTZ)
 <br>
 
@@ -64,7 +65,7 @@ Where:
     - If the mapping starts with `«#»` where # is one or more characters, these are used for Help Images.
     - `→ | % ‹entry›` : Send a literal string/ligature by the SendInput {Text}‹entry› method
     - `§ | $ ‹entry›` : Send a literal string/ligature by the SendMessage ‹entry› method
-    - `α | * ‹entry›` : Send entry as AHK syntax in which !+^# are modifiers, and {} contain key names
+    - `α | * ‹entry›` : Send entry as AHK syntax in which +^!# are modifiers, and {} contain key names
     - `β | = ‹entry›` : Send {Blind}‹entry›, keeping the current modifier state
     - `† | ~ ‹entry›` : Send the 4-digit hex Unicode point U+<entry>
     - `Ð | @ ‹entry›` : Send the current layout's dead key named ‹entry› (often a 3-character code)
@@ -89,6 +90,82 @@ QW_U    = System                    ; System mapped key. Uses whatever is on the
 QWCLK   = Disabled                  ; The CapsLock key will stop working while EPKL is running.
 ```
 Entries are any-whitespace delimited.
+<br><br>
+
+Layout_Override example
+-----------------------
+With a layout override file, you can do some neat customizations. I'll show you mine.
+
+* The EPKL `Layout/Settings` `Key Mapper` tab has a "`Submit to Layout`" button. 
+* Instead of writing to the main `EPKL_Layouts_Override` `.ini` file, this button creates a `Layout_Override` in your current layout folder. 
+    - (Tip: Opening the current layout folder is the default setting for the `Open app/folder` menu choice.) 
+* This file can override anything a layout file can do. And it's at the top of the `LayStack` so it can't be overridden itself.
+* Below is the first part of my `Graphite\Gra-eD-Gralmak_ISO_AWideSym` override file.
+* As usual, an initial semicolon disables that line, so the original or default value is used.
+
+```
+[information]
+layoutName      = Gralmak-eD-AWS OeBeAa 							; Long layout name for display in menus etc.
+
+[pkl]
+;KbdType         = ISO-Orth-W    									; @K below: ANS (ANSI 101/104 key), ISO (Intl. 102/105 key)
+;baseLayout      = ..\BaseLayout_Gralmak-eD      					; This layout has a Variant BaseLayout, which uses yet another.
+;mapSC_layout    = AWS_@K    										; Angle_@K, AWide_@K, Cmk-CAW-_@K etc - see _eD_Remap.ini
+;mapSC_extend    = AWide_@K  										; As _layout but only "hard" (non-letter) mods
+
+img_sizeWH      = 704,226   										; DreymaR's IBM-style help images @96dpi (1u/r = 54,56 px: 15u/5r = 812,282; 13u/4r = 704,226)
+img_MainDir     = ..\Gra-eD-Gralmak_ANS-Orth_WideSym\   			; Help images are in the main layout folder, unless specified in img_MainDir.
+img_bgImage     = Files\ImgBackground\Bg_FingerShui_Ortho-Wide.png
+
+img_Extend1     = Files\ImgExtend\@K-Ortho-W_Ext1.png   			; @K-AWide_Ext1.png
+img_Extend2     = Files\ImgExtend\@K-Ortho-W_Ext2.png
+img_Extend3     = Files\ImgExtend\@K-Ortho-W_Ext3.png   			; "Soft" mnemonic layers follow letters
+img_DKeyDir     = ..\Gra-eD-Gralmak_ISO-Orth_WideSym\DeadkeyImg 	; .\DeadkeyImg
+img_ModsDir     = Files\ImgModStates\MagBlob-Ortho  				; GrnBlob
+```
+
+* The long layout name (shown in the About EPKL dialog) is changed from its `Layout.ini` file value.
+* Other info is left untweaked, as are the KbdType, BaseLayout and remap-SC settings.
+* I use row-staggered keyboards, but I like the compact ortho help images. 
+    - So I've set the image size, MainDir/DKeyDir and background/Extend images accordingly.
+    - I can thus use an AWide modded row-stag layout with ortho images. 
+    - The `6\7 vs 5\6` Wide issue may need resolving to your liking. 
+* For fun, I've changed the Shift/AltGr indicator from its default green to the MagBlob variant.
+
+Here's the rest of my `Layout_Override`:
+```
+[layout]
+;;  Override keys from the base layout with mappings here. A "VK" entry resets that key.
+
+[dk_CoDeKey_0]
+;;  These are mappings used by the EPKL CoDeKey through the @co0 dead key.
+
+[dk_Ext_Special]
+;;  Some useful symbols and commands are found in this DK table. By default it's used with unmodified Extend-tap if you have a MoDK Extend key set.
+;<g>     = «Ʃ»   α¢[Run("https://numpad.io/")]¢¢[Slp(800)]¢^{End}    										; g ⇒ Run Calculator
+<G>+    = «🗒»   α¢[Run("C:\Portables\PortableApps\Notepad++Portable\Notepad++Portable.exe")]¢   			; G ⇒ Run Notepad++ (was "Notepad")
+
+[compose_strings]
+;;  Additions to the string (and X11) sequences defined in the Compose file.
+'loke   = →ᛚᚮᚴᛂ   													; Loki's name in medieval runes. I happen to be a fan. 🤘
+'Loke   = →ᛚᚬᚴᛅ   													; Loke in Younger Futhark runes (or ᛚᚮᚴᛁ – LOKI).
+1er     = 1ᵉʳ   													; Nice for the French?
+
+[compose_adding]
+;;  Completion sequences that are added to, not replaced like normal Compose. To use, enable a Compose key using the `adding` table.
+;i       = j  														; An ij completion should be useful for Dutch typists using a Nl variant!
+;I       = J  														;   [Note: The ĳ digraph isn't so compatible these days.]
+```
+* Some of this could've been in the `EPKL_Layouts_Override.ini` in the root folder. But some mappings are layout specific.
+* For the most part, I simply tend to plop some tweaks I use into the layout I'm using. It's handy and easy to find.
+* Currently there are no tweaks to the main layout mappings, nor the `CoDeKey (@co0)` dead key mappings.
+* For the `Ext_Special` (Extend-tap) DeadKey, I decided to keep the default that opens the Windows Calculator app on `g`.
+* On capital `G` though, I feel better served by opening Notepad++ than the default Windows Notepad.
+    - Note the nifty `¢[]¢`-wrapped special syntax for the `Run()` and `Sleep()` functions.
+* The Compose strings could be in the root file instead of here, as long as nothing further up in the LayStack overrides them.
+* But the (disabled) Compose adding mappings are examples of layout customization. If typing Dutch, you might want to use these.
+
+So there you have it. There are lots of nifty things you can make EPKL do for you, if you ask the right way!
 <br><br>
 
 Layout variant tutorial
@@ -153,15 +230,16 @@ The relevant ISO codes can be found at the following addresses:
 <br>
 
 
-[EPKLgh]: https://github.com/DreymaR/BigBagKbdTrixPKL/ (EPKL on GitHub)
-[SCMSDN]: https://msdn.microsoft.com/en-us/library/aa299374(v=vs.60).aspx (Scan code list at MSDN)
-[VKCAHK]: https://autohotkey.com/docs/KeyList.htm (Virtual key list in the AHK docs)
+[EPKLgh]: https://github.com/DreymaR/BigBagKbdTrixPKL/                      (EPKL on GitHub)
+[SCMSDN]: https://msdn.microsoft.com/en-us/library/aa299374(v=vs.60).aspx   (Scan code list at MSDN)
+[VKCAHK]: https://autohotkey.com/docs/KeyList.htm                           (Virtual key list in the AHK docs)
 [InkPrt]: https://portableapps.com/apps/graphics_pictures/inkscape_portable (Inkscape v1.0 at PortableApps.com)
-[ISOANS]: https://deskthority.net/wiki/ANSI_vs_ISO (Deskthority on ANSI vs ISO keyboard models)
-[KeyTab]: ../Other/KeyCodeTable.txt (KeyCodeTable.txt)
-[LayOvr]: ../EPKL_Layouts_Override_Example.ini (EPKL_Layouts_Override example file)
-[LayDef]: ../EPKL_Layouts_Default.ini (EPKL_Layouts_Default file)
-[PklIni]: ../EPKL_Settings_Default.ini (EPKL Settings file)
-[MapIni]: ../Files/_eD_Remap.ini (EPKL Remap file)
-[DKsIni]: ../Files/_eD_DeadKeys.ini (EPKL DeadKeys file)
-[CmpIni]: ../Files/_eD_Compose.ini (EPKL Compose file)
+[ISOANS]: https://deskthority.net/wiki/ANSI_vs_ISO                          (Deskthority on ANSI vs ISO keyboard models)
+[BbtErg]: https://dreymar.colemak.org/ergo-mods.html                        (Dreymar's Big Bag Of Keyboard Trix, on Ergo Mods)
+[KeyTab]: /Other/KeyCodeTable.txt                                           (EPKL KeyCodeTable.txt)
+[LayOvr]: /EPKL_Layouts_Override_Example.ini                                (EPKL_Layouts_Override example file)
+[LayDef]: /EPKL_Layouts_Default.ini                                         (EPKL_Layouts_Default file)
+[PklIni]: /EPKL_Settings_Default.ini                                        (EPKL Settings file)
+[MapIni]: /Files/_eD_Remap.ini                                              (EPKL Remap file)
+[DKsIni]: /Files/_eD_DeadKeys.ini                                           (EPKL DeadKeys file)
+[CmpIni]: /Files/_eD_Compose.ini                                            (EPKL Compose file)
